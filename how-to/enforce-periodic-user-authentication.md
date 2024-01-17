@@ -1,8 +1,8 @@
 
 # Enforce periodic user authentication
 
-To ensure a high level of security, NetBird offers a peer login expiration feature that requires users to periodically reauthenticate their devices.
-Every new network has this feature enabled, and the expiration period is set to 24 hours by default. You can disable this feature and configure the expiration period in the account settings in the web UI https://app.netbird.io/settings.
+To ensure a high level of security, Netzilo offers a peer login expiration feature that requires users to periodically reauthenticate their devices.
+Every new network has this feature enabled, and the expiration period is set to 24 hours by default. You can disable this feature and configure the expiration period in the account settings in the web UI https://app.Netzilo.io/settings.
 
 <Note>
     This feature is only applied to peers added with the [interactive SSO login feature](/how-to/installation#running-net-bird-with-sso-login). Peers, added with a setup key, won't be affected.
@@ -31,7 +31,7 @@ You can also disable the expiration for the whole network in the same section.
 
 ## Disable expiration individually per peer
 Sometimes, you might want to disable peer expiration for some peers.
-With NetBird you can disable login expiration per peer without disabling expiration globally.
+With Netzilo you can disable login expiration per peer without disabling expiration globally.
 In the Peers tab of the web UI click on the peer you want to disable expiration for and use the Login Expiration switch.
 Peers with `expiration disabled` will be marked with a corresponding label in the peers' table.
 
@@ -41,10 +41,10 @@ Peers with `expiration disabled` will be marked with a corresponding label in th
 
 ## Get started
 <p float="center" >
-    <Button name="button" className="button-5" onClick={() => window.open("https://netbird.io/pricing")}>Use NetBird</Button>
+    <Button name="button" className="button-5" onClick={() => window.open("https://Netzilo.io/pricing")}>Use Netzilo</Button>
 </p>
 
-- Make sure to [star us on GitHub](https://github.com/netbirdio/netbird)
-- Follow us [on Twitter](https://twitter.com/netbird)
-- Join our [Slack Channel](https://join.slack.com/t/netbirdio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A)
-- NetBird [latest release](https://github.com/netbirdio/netbird/releases) on GitHub
+- Make sure to [star us on GitHub](https://github.com/Netziloio/Netzilo)
+- Follow us [on Twitter](https://twitter.com/Netzilo)
+- Join our [Slack Channel](https://join.slack.com/t/Netziloio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A)
+- Netzilo [latest release](https://github.com/Netziloio/Netzilo/releases) on GitHub

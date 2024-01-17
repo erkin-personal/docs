@@ -7,26 +7,26 @@
 <br/><br/>
 
 You don't need to design a network or configure [DHCP](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol)
-as it is automatically done in a single place - the NetBird Management service.
-NetBird assigns and automatically distributes IP addresses to your peers.
+as it is automatically done in a single place - the Netzilo Management service.
+Netzilo assigns and automatically distributes IP addresses to your peers.
 Once peers have IPs, they can communicate with one another and establish direct encrypted WireGuard® tunnels.
 You can use these IPs to access the services running on the connected peers (e.g., SSH).
 Even though we trust our memory capacity, there is a limit to what we can remember,
 especially when it comes to IP addresses like this one, 100.128.185.34.
 
-Starting [v0.11.0](https://github.com/netbirdio/netbird/releases), NetBird automatically assigns a domain name
-to each peer in a private `netbird.cloud` space that can be used to access the machines. E.g., `my-server.netbird.cloud`.
+Starting [v0.11.0](https://github.com/Netziloio/Netzilo/releases), Netzilo automatically assigns a domain name
+to each peer in a private `Netzilo.cloud` space that can be used to access the machines. E.g., `my-server.Netzilo.cloud`.
 
-Besides accessing machines by their domain names, you can configure NetBird to use your private nameservers,
+Besides accessing machines by their domain names, you can configure Netzilo to use your private nameservers,
 control what nameservers a specific [peer group](/how-to/manage-network-access#groups) should use, and set up split DNS.
 
 <Note>
-    Nameservers feature is available in NetBird [v0.11.0](https://github.com/netbirdio/netbird/releases) or later.
+    Nameservers feature is available in Netzilo [v0.11.0](https://github.com/Netziloio/Netzilo/releases) or later.
 </Note>
 
 ## Concepts
 ### Local resolver
-To minimize the number of changes in your system, NetBird will spin up a local DNS resolver.
+To minimize the number of changes in your system, Netzilo will spin up a local DNS resolver.
 
 This local resolver will be responsible for queries to the domain names of peers registered in your network and forwarding queries to upstream nameservers you configure in the system.
 
@@ -38,9 +38,9 @@ By default, when creating nameserver groups without match domains, implies that 
     Only MacOS, Windows 10+, and Linux running `systemd-resolved` support nameservers with only match domains. For a better experience, we recommend setting at least a nameserver group without match domains to be applied to the `All` group.
 </Note>
 #### Mark match domains as search domains
-Marking a match domain as search domains configures the peers to use only hostnames to perform FQDN queries. e.g. `ping host-a` instead of `ping host-a.netbird.cloud`.
+Marking a match domain as search domains configures the peers to use only hostnames to perform FQDN queries. e.g. `ping host-a` instead of `ping host-a.Netzilo.cloud`.
 <Note>
-    Marking a match domains as search domains feature is available in NetBird [v0.24.0](https://github.com/netbirdio/netbird/releases) or later.
+    Marking a match domains as search domains feature is available in Netzilo [v0.24.0](https://github.com/Netziloio/Netzilo/releases) or later.
 </Note>
 #### Distribution groups
 Distribution defines that peers that belong to groups set in this field will receive the nameserver configuration.
@@ -54,7 +54,7 @@ A nameserver group defines up to 2 nameservers to resolve DNS to a set of peers 
 ### Creating a nameserver group
 Access the `DNS` tab and click the `Add Nameserver` button to create a new nameserver.
 <p>
-    <img src="/docs-static/img/how-to-guides/netbird-nameserver-add-button.png" alt="high-level-dia" className="imagewrapper"/>
+    <img src="/docs-static/img/how-to-guides/Netzilo-nameserver-add-button.png" alt="high-level-dia" className="imagewrapper"/>
 </p>
 That will open a nameserver selection configuration screen where you can choose between using three predefined public
 nameservers or using a custom setup.
@@ -65,13 +65,13 @@ If you choose a predefined public nameserver option, you can select the followin
 - [Cloudflare DNS servers](https://one.one.one.one/dns/)
 - [Quad9 DNS servers](https://www.quad9.net/)
 <p>
-    <img src="/docs-static/img/how-to-guides/netbird-nameserver-selection-view-open.png" alt="high-level-dia" width="300" className="imagewrapper"/>
+    <img src="/docs-static/img/how-to-guides/Netzilo-nameserver-selection-view-open.png" alt="high-level-dia" width="300" className="imagewrapper"/>
 </p>
 
 After selecting one of the three options, you need to assign a peer group for which this nameserver will be effective.
 In the example below, we chose the "All" group:
 <p>
-    <img src="/docs-static/img/how-to-guides/netbird-nameserver-all-group.png" alt="high-level-dia" width="300" className="imagewrapper"/>
+    <img src="/docs-static/img/how-to-guides/Netzilo-nameserver-all-group.png" alt="high-level-dia" width="300" className="imagewrapper"/>
 </p>
 
 #### Creating custom nameservers
@@ -84,7 +84,7 @@ In the example below, we are creating a nameserver with the following informatio
 - Add at least one nameserver: `192.168.0.32` with port `53`
 - Distribution group: `Remote developers`
 <p>
-    <img src="/docs-static/img/how-to-guides/netbird-nameserver-custom.png" alt="high-level-dia" width="300" className="imagewrapper"/>
+    <img src="/docs-static/img/how-to-guides/Netzilo-nameserver-custom.png" alt="high-level-dia" width="300" className="imagewrapper"/>
 </p>
 
 ### Creating a nameserver for specific domains
@@ -92,7 +92,7 @@ Sometimes we want to forward DNS queries to specific nameservers but only for pa
 Taking the example of custom nameservers above, you could select a match mode for only domains listed there.
 Below you can see the same nameserver setup but only for the `berlinoffice.com` domain:
 <p>
-    <img src="/docs-static/img/how-to-guides/netbird-nameserver-remote-resolver.png" alt="high-level-dia" width="300" className="imagewrapper"/>
+    <img src="/docs-static/img/how-to-guides/Netzilo-nameserver-remote-resolver.png" alt="high-level-dia" width="300" className="imagewrapper"/>
 </p>
 
 <Note>
@@ -104,12 +104,12 @@ You can select as many distribution groups as you want for your nameserver setup
 ### Adding remote private DNS servers
 To add a private DNS server that is running behind routing peers, you need to create resources to ensure communication between your nameserver clients can communicate. In the Berlin office example from previous steps, we have a peer from the `Office network` that can route traffic to the `192.168.0.32` IP, so we need to ensure that a similar network route exists:
 <p>
-    <img src="/docs-static/img/how-to-guides/netbird-nameserver-remote-route.png" alt="high-level-dia" className="imagewrapper"/>
+    <img src="/docs-static/img/how-to-guides/Netzilo-nameserver-remote-route.png" alt="high-level-dia" className="imagewrapper"/>
 </p>
 
 Then we need to confirm that an access rule exists to connect `Remote developers` to `Office network` group:
 <p>
-    <img src="/docs-static/img/how-to-guides/netbird-nameserver-remote-rule.png" alt="high-level-dia" className="imagewrapper"/>
+    <img src="/docs-static/img/how-to-guides/Netzilo-nameserver-remote-rule.png" alt="high-level-dia" className="imagewrapper"/>
 </p>
 
 ## Testing configuration
@@ -120,30 +120,30 @@ For these cases, we listed some tools to support your checks:
 #### MacOS
 You can use `dscacheutil`:
 ```shell
-dscacheutil -q host -a name peer-a.netbird.cloud
+dscacheutil -q host -a name peer-a.Netzilo.cloud
 ```
 #### Windows
 You can use `Resolve-DnsName` on `Powershell`:
 ```shell
-Resolve-DnsName -Name  peer-a.netbird.cloud
+Resolve-DnsName -Name  peer-a.Netzilo.cloud
 ```
 #### Linux
 In most cases, you will be fine with traditional tools because most DNS managers on Linux tend to update the /etc/resolv.conf.
 ```shell
-dig peer-a.netbird.cloud
+dig peer-a.Netzilo.cloud
 # or
-nslookup peer-a.netbird.cloud
+nslookup peer-a.Netzilo.cloud
 ```
 If your system is running systemd-resolved, you can also use ```resolvectl```:
 ```shell
-resolvectl query peer-a.netbird.cloud
+resolvectl query peer-a.Netzilo.cloud
 ```
 ## Get started
 <p float="center" >
-    <Button name="button" className="button-5" onClick={() => window.open("https://netbird.io/pricing")}>Use NetBird</Button>
+    <Button name="button" className="button-5" onClick={() => window.open("https://Netzilo.io/pricing")}>Use Netzilo</Button>
 </p>
 
-- Make sure to [star us on GitHub](https://github.com/netbirdio/netbird)
-- Follow us [on Twitter](https://twitter.com/netbird)
-- Join our [Slack Channel](https://join.slack.com/t/netbirdio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A)
-- NetBird [latest release](https://github.com/netbirdio/netbird/releases) on GitHub
+- Make sure to [star us on GitHub](https://github.com/Netziloio/Netzilo)
+- Follow us [on Twitter](https://twitter.com/Netzilo)
+- Join our [Slack Channel](https://join.slack.com/t/Netziloio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A)
+- Netzilo [latest release](https://github.com/Netziloio/Netzilo/releases) on GitHub

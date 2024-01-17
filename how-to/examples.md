@@ -1,7 +1,5 @@
 
-export const title = 'Examples'
-
-## NetBird Client on AWS ECS (Terraform)
+## Netzilo Client on AWS ECS (Terraform)
 
 <p>
     <img src="/docs-static/img/examples/wiretrustee-on-aws-ecs.png" alt="high-level-dia" width="400"/>
@@ -24,18 +22,18 @@ All these options are valid and proved to work over the years, but they come wit
 * Fragile firewall configuration.
 * Yet, another server to secure and maintain.
 
-**In this example, we will run NetBird client configured as a daemon set in ECS deployed with Terraform.**
+**In this example, we will run Netzilo client configured as a daemon set in ECS deployed with Terraform.**
 
 This allows you to:
 
-* Run NetBird as an ECS native service, you can manage and maintain it the same way you do with your other services.
+* Run Netzilo as an ECS native service, you can manage and maintain it the same way you do with your other services.
 * Connect to EC2 running on private subnets without the need to open firewall rules or configure bastion servers.
-* Access other services connected to your NetBird network and running anywhere.
+* Access other services connected to your Netzilo network and running anywhere.
 
 ### Requirements
 * Terraform > 1.0.
-* A NetBird account with a Setup Key.
-* Another NetBird client in your network to validate the connection (possibly your laptop or a machine you are running this example on).
+* A Netzilo account with a Setup Key.
+* Another Netzilo client in your network to validate the connection (possibly your laptop or a machine you are running this example on).
 * The [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed.
 * An [AWS account](https://aws.amazon.com/free/).
 * Your AWS credentials. You can [create a new Access Key on this page](https://console.aws.amazon.com/iam/home?#/security_credentials).
@@ -46,7 +44,7 @@ This allows you to:
 
 Clone this repository, download, and install Terraform following the guide [here](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started).
 
-Login to https://app.netbird.io and [add your machine as a peer](https://app.netbird.io/add-peer), once you are done with the steps described there, copy your [Setup key](https://app.netbird.io/setup-keys).
+Login to https://app.Netzilo.io and [add your machine as a peer](https://app.Netzilo.io/add-peer), once you are done with the steps described there, copy your [Setup key](https://app.Netzilo.io/setup-keys).
 
 Using a text editor, edit the [variables.tf](https://github.com/wiretrustee/wiretrustee-examples/tree/master/ecs-client-daemon/variables.tf) file, and update the `wt_setup_key` variable with your setup key. Also, make sure that `ssh_public_key_path` variable is pointing to the correct public key path. If necessary, update the remaining variables according to your requirements and their descriptions.
 
@@ -70,7 +68,7 @@ terraform apply plan.tf
 ```
 
 #### Validating the deployment
-After a few minutes, the autoscaling group will launch an EC2 instance and there you will find the NetBird's ECS Daemon service running. With that, we can go to our [NetBird dashboard](https://app.netbird.io) and pick the IP of the node that is running NetBird, then we can connect to the node via ssh. For Unix(s) systems:
+After a few minutes, the autoscaling group will launch an EC2 instance and there you will find the Netzilo's ECS Daemon service running. With that, we can go to our [Netzilo dashboard](https://app.Netzilo.io) and pick the IP of the node that is running Netzilo, then we can connect to the node via ssh. For Unix(s) systems:
 ```shell
 ssh ec2-user@100.64.0.200
 ```
@@ -90,26 +88,26 @@ terraform plan -out plan.tf -destroy
 terraform apply plan.tf
 ```
 
-## NetBird Client in Docker
+## Netzilo Client in Docker
 
-One of the simplest ways of running NetBird client application is to use a pre-built [Docker image](https://hub.docker.com/r/netbirdio/netbird).
+One of the simplest ways of running Netzilo client application is to use a pre-built [Docker image](https://hub.docker.com/r/Netziloio/Netzilo).
 
 **Prerequisites:**
 * **Docker installed.**
    If you don't have docker installed, please refer to the installation guide on the official [Docker website](https://docs.docker.com/get-docker/).
-* **NetBird account.**
-   Register one at [app.netbird.io](https://app.netbird.io/).
+* **Netzilo account.**
+   Register one at [app.Netzilo.io](https://app.Netzilo.io/).
 
-You would need to obtain a [setup key](/how-to/register-machines-using-setup-keys) to associate NetBird client with your account.
+You would need to obtain a [setup key](/how-to/register-machines-using-setup-keys) to associate Netzilo client with your account.
 
-The setup key could be found in the NetBird Management dashboard under the Setup Keys tab - [https://app.netbird.io/setup-keys](https://app.netbird.io/setup-keys).
+The setup key could be found in the Netzilo Management dashboard under the Setup Keys tab - [https://app.Netzilo.io/setup-keys](https://app.Netzilo.io/setup-keys).
 
 Set the ```NB_SETUP_KEY``` environment variable and run the command.
 
 ```bash
-docker run --rm --name PEER_NAME --hostname PEER_NAME --cap-add=NET_ADMIN --cap-add=SYS_ADMIN --cap-add=SYS_RESOURCE -d -e NB_SETUP_KEY=<SETUP KEY> -v netbird-client:/etc/netbird netbirdio/netbird:latest
+docker run --rm --name PEER_NAME --hostname PEER_NAME --cap-add=NET_ADMIN --cap-add=SYS_ADMIN --cap-add=SYS_RESOURCE -d -e NB_SETUP_KEY=<SETUP KEY> -v Netzilo-client:/etc/Netzilo Netziloio/Netzilo:latest
 ```
 
-That is it! Enjoy using NetBird.
+That is it! Enjoy using Netzilo.
 
-If you would like to learn how to run NetBird Client as an ECS agent on AWS, please refer to [this guide](#net-bird-client-on-aws-ecs-terraform).
+If you would like to learn how to run Netzilo Client as an ECS agent on AWS, please refer to [this guide](#net-bird-client-on-aws-ecs-terraform).

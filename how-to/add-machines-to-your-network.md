@@ -1,17 +1,17 @@
 
-# Add machines to your NetBird network
+# Add machines to your Netzilo network
 
 Whether you have a network for personal use or manage your company's corporate network, you'd probably want to add machines
-(or peers in NetBird's terms) to your network.
+(or peers in Netzilo's terms) to your network.
 
-NetBird peer is a machine that runs the [NetBird agent](/about-netbird/how-netbird-works#client-application)
-and is connected to the network. NetBird peer can be a virtual machine running in the cloud like AWS or Google Cloud,
+Netzilo peer is a machine that runs the [Netzilo agent](/about-Netzilo/how-Netzilo-works#client-application)
+and is connected to the network. Netzilo peer can be a virtual machine running in the cloud like AWS or Google Cloud,
 an Android or iOS device, a personal laptop, a single-board computer like Raspberry Pi, a docker container, or even a router.
 
-## Use NetBird web UI to add new peers
+## Use Netzilo web UI to add new peers
 
 To add a new peer to your network follow these steps:
-1. Sign-in you NetBird account at https://app.netbird.io/ and go to the Peers tab.
+1. Sign-in you Netzilo account at https://app.Netzilo.io/ and go to the Peers tab.
 2. Hit `Add new peer` button
 
 <p>
@@ -33,16 +33,16 @@ To add a new peer to your network follow these steps:
 
 ## What's next?
 
-Here are a few links that might be handy as you venture further into NetBird:
+Here are a few links that might be handy as you venture further into Netzilo:
 
 - [Add users to your network](/how-to/add-users-to-your-network)
-- [Use setup keys to automate NetBird deployments](/how-to/register-machines-using-setup-keys)
+- [Use setup keys to automate Netzilo deployments](/how-to/register-machines-using-setup-keys)
 
 <p float="center" >
-    <Button name="button" className="button-5" onClick={() => window.open("https://netbird.io/pricing")}>Try NetBird</Button>
+    <Button name="button" className="button-5" onClick={() => window.open("https://Netzilo.io/pricing")}>Try Netzilo</Button>
 </p>
 
-- Make sure to [star us on GitHub](https://github.com/netbirdio/netbird)
-- Follow us [on Twitter](https://twitter.com/netbird)
-- Join our [Slack Channel](https://join.slack.com/t/netbirdio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A)
-- NetBird [latest release](https://github.com/netbirdio/netbird/releases) on GitHub
+- Make sure to [star us on GitHub](https://github.com/Netziloio/Netzilo)
+- Follow us [on Twitter](https://twitter.com/Netzilo)
+- Join our [Slack Channel](https://join.slack.com/t/Netziloio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A)
+- Netzilo [latest release](https://github.com/Netziloio/Netzilo/releases) on GitHub

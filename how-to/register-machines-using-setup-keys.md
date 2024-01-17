@@ -4,11 +4,11 @@
 Setup key is a pre-authentication key that allows to register new machines in your network.
 It simply associates a machine with an account on a first run.
 
-The setup key can be provided as a parameter to the ```netbird up``` command.
+The setup key can be provided as a parameter to the ```Netzilo up``` command.
 This makes it possible to run automated deployments with infrastructure-as-code software like Ansible, Cloudformation or Terraform.
 
-```bash {{ title: 'Starting NetBird Client' }}
-sudo netbird up --setup-key <SETUP KEY>
+```bash {{ title: 'Starting Netzilo Client' }}
+sudo Netzilo up --setup-key <SETUP KEY>
 ```
 
 ## Types of setup seys
@@ -24,7 +24,7 @@ Peers that are offline for over 10 minutes will be removed automatically.
 
 ## Using setup keys
 
-Setup keys are available in the NetBird Management Dashboard under the `Setup Keys` tab [https://app.netbird.io/setup-keys](https://app.netbird.io/setup-keys).
+Setup keys are available in the Netzilo Management Dashboard under the `Setup Keys` tab [https://app.Netzilo.io/setup-keys](https://app.Netzilo.io/setup-keys).
  You can easily add new or revoke keys.
 
 <p>
@@ -50,11 +50,11 @@ We recommend limiting the number of times the key can be used, e.g., set it to 3
     <img src="/docs-static/img/architecture/peer-auto-tagging-setupkey.gif" alt="high-level-dia" className="imagewrapper"/>
 </p>
 
-NetBird offers a powerful [access control feature](/how-to/manage-network-access) that allows easy access management of your resources.
+Netzilo offers a powerful [access control feature](/how-to/manage-network-access) that allows easy access management of your resources.
 In a basic scenario, you would create multiple groups of peers and create access rules to define what groups can access each other.
 Adding peers to groups might become time-consuming in large networks with dozens of machines.
 
-Starting NetBird [v0.9.2](https://github.com/netbirdio/netbird/releases), when creating or updating a setup key,
+Starting Netzilo [v0.9.2](https://github.com/Netziloio/Netzilo/releases), when creating or updating a setup key,
 it is possible to specify a list of auto-assign groups. Every peer registered with this key will be automatically added
 to these groups. All the access control rules enabled for these groups will apply automatically.
 
@@ -62,7 +62,7 @@ To add `Auto-assign groups`, open the `Setup Keys` tab and create or update any 
 Then use this key to enroll new machine.
 
 <p>
-    <img src="/docs-static/img/architecture/netbird-peer-auto-tagging-newkey.png" alt="high-level-dia" width="500" className="imagewrapper"/>
+    <img src="/docs-static/img/architecture/Netzilo-peer-auto-tagging-newkey.png" alt="high-level-dia" width="500" className="imagewrapper"/>
 </p>
 
 <Note>

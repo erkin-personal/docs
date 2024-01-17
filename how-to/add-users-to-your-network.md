@@ -2,23 +2,23 @@
 # Add users to your network
 
 Whether you have a network for personal use or manage your company's corporate network, you'd probably want to invite
-people to your account and join your NetBird network.
+people to your account and join your Netzilo network.
 
-There are two ways of adding users to a NetBird account - indirect and direct.
+There are two ways of adding users to a Netzilo account - indirect and direct.
 
 ## Indirect user invites
-This way of adding users is managed by the NetBird system and doesn't require administrator input.
+This way of adding users is managed by the Netzilo system and doesn't require administrator input.
 It works only for organizations with private domains.
 
-Whenever a new user signs up with a private domain (e.g., @netbird.io),
-NetBird creates a new account and associates it with the netbird.io organization (domain) automatically.
-Every consequent user signup with the same @netbird.io domain in their email address will end up under the same organization.
+Whenever a new user signs up with a private domain (e.g., @Netzilo.io),
+Netzilo creates a new account and associates it with the Netzilo.io organization (domain) automatically.
+Every consequent user signup with the same @Netzilo.io domain in their email address will end up under the same organization.
 
 <Note>
     This feature isn't available in the self-hosted setup. By default, all users are joining the same network instead.
 </Note>
 
-How does it work? Every time a previously unknown user registers at [app.netbird.io](https://app.netbird.io/),
+How does it work? Every time a previously unknown user registers at [app.Netzilo.io](https://app.Netzilo.io/),
 the system classifies the domain part of the email.
 The domain can fall into one of the following categories - `public`, `private`, or `unclassified`.
 The domains of the private category are the ones that are automatically grouped under the same account.
@@ -27,7 +27,7 @@ Public domains are the ones of the public email providers like Gmail.
 <Note>
     It might happen (unlikely) that the domain classification system didn't classify your company's domain as private.
     Our system was unsure about your domain and assigned an unclassified or public category to be on the safe side.
-    Just email us at [hello@netbird.io](mailto:hello@netbird.io) or ping us on [Slack](https://join.slack.com/t/netbirdio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A) to fix this.
+    Just email us at [hello@Netzilo.io](mailto:hello@Netzilo.io) or ping us on [Slack](https://join.slack.com/t/Netziloio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A) to fix this.
 </Note>
 
 ## Direct user invites
@@ -43,14 +43,14 @@ After logging in to the system, they will join your network automatically.
 </p>
 
 <Note>
-    If a user already has a NetBird account, you can't invite them.
+    If a user already has a Netzilo account, you can't invite them.
     This is a limitation that is likely to be removed in future versions.
 </Note>
 
 ## Manage user roles
-NetBird has three user roles - `Owner`, `Admin`, and `User`. The roles allow you to control the level of access to the management API of your account.
+Netzilo has three user roles - `Owner`, `Admin`, and `User`. The roles allow you to control the level of access to the management API of your account.
 
-- `Owner` role - has full access to the account and can manage all aspects of the account. There can be only one account owner in NetBird. Users with the owner role can delete their organization account. See the [Delete NetBird account](/how-to/delete-account) section.
+- `Owner` role - has full access to the account and can manage all aspects of the account. There can be only one account owner in Netzilo. Users with the owner role can delete their organization account. See the [Delete Netzilo account](/how-to/delete-account) section.
 - `Admin` role - has full access to the account except that administrators can't delete or update the role of the Owner user and delete the organization account.
 - `User` role - has limited access to the account, allowing users to view peers they own and others they can connect to. Users can create personal access tokens for programmatic access.
 
@@ -68,10 +68,10 @@ Click the `Save` button to save the changes.
 </Note>
 ## Get started
 <p float="center" >
-    <Button name="button" className="button-5" onClick={() => window.open("https://netbird.io/pricing")}>Use NetBird</Button>
+    <Button name="button" className="button-5" onClick={() => window.open("https://Netzilo.io/pricing")}>Use Netzilo</Button>
 </p>
 
-- Make sure to [star us on GitHub](https://github.com/netbirdio/netbird)
-- Follow us [on Twitter](https://twitter.com/netbird)
-- Join our [Slack Channel](https://join.slack.com/t/netbirdio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A)
-- NetBird [latest release](https://github.com/netbirdio/netbird/releases) on GitHub
+- Make sure to [star us on GitHub](https://github.com/Netziloio/Netzilo)
+- Follow us [on Twitter](https://twitter.com/Netzilo)
+- Join our [Slack Channel](https://join.slack.com/t/Netziloio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A)
+- Netzilo [latest release](https://github.com/Netziloio/Netzilo/releases) on GitHub

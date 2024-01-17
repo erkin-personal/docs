@@ -1,11 +1,11 @@
 
 # Manage network access
-NetBird allows administrators to restrict access to resources (peers) by creating access rules and
+Netzilo allows administrators to restrict access to resources (peers) by creating access rules and
 defining what peer groups are permitted to establish connections with one another. Rule can allow connections
 by specific protocol and ports.
 
 ## Introduction
-A NetBird account comes with a `Default` rule that allows all peers of the account to connect to each other by all protocols,
+A Netzilo account comes with a `Default` rule that allows all peers of the account to connect to each other by all protocols,
 forming a full mesh network. In most cases, this is the desired state for a small network or network that has low-security requirements.
 When you need to restrict access to certain resources that belong to specific users or services within your organization,
 you can create rules that dictate who can access what.
@@ -14,7 +14,7 @@ Access control rules make use of groups to control connections between peers; th
 
 ## Concepts
 ### Groups
-A NetBird group works and follows a similar concept to tags in other platforms; they are easily created and can be associated with peers and used in rules to control traffic within your network.
+A Netzilo group works and follows a similar concept to tags in other platforms; they are easily created and can be associated with peers and used in rules to control traffic within your network.
 
 Some characteristics of groups:
 - They are unique.

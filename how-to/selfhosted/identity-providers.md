@@ -1,0 +1,1252 @@
+
+# Identity Providers
+
+There are a few Identity Provider options that you can choose to run a self-hosted version Netzilo.
+
+<Note>
+    Netzilo supports generic OpenID (OIDC) protocol allowing for the integration with any IDP that follows the specification.
+</Note>
+
+## Self-hosted IDPs
+
+### Zitadel
+
+This guide is a part of the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide) and explains how to integrate
+**self-hosted** Netzilo with [Zitadel](https://zitadel.com).
+
+<Note>
+    If you prefer not to self-host an Identity and Access Management solution, then you could use the managed alternative
+    [Zitadel Cloud](https://zitadel.cloud/).
+</Note>
+
+#### Step 1. Create and configure Zitadel application
+In this step, we will create and configure Netzilo application in zitadel.
+
+Create new zitadel project
+- Navigate to zitadel console
+- Click `Projects` at the top menu, then click `Create New Project` to create a new project
+- Fill in the form with the following values and click `Continue`
+- Name: `Netzilo`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-new-project.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+Create new zitadel application
+- Click `Projects` in the top menu and select `Netzilo` project from the list
+- Click `New` in `APPLICATIONS` section to create a new application
+- Fill in the form with the following values and click `Continue`
+- Name: `Netzilo`
+- TYPE OF APPLICATION: `User Agent`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-new-application.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Fill in the form with the following values and click `Continue`
+- Authentication Method: `PKCE`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-new-application-auth.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Fill in the form with the following values and click `Continue`
+- Redirect URIs: `https://<domain>/auth` and click `+`
+- Redirect URIs: `https://<domain>/silent-auth` and click `+`
+- Redirect URIs: `http://localhost:53000` and click `+`
+- Post Logout URIs: `https://<domain>/` and click `+`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-new-application-uri.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Verify applications details and Click `Create` and then click `Close`
+- Under `Grant Types` select `Authorization Code`, `Device Code` and `Refresh Token` and click `save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-new-application-overview.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Copy `Client ID` will be used later in the `setup.env`
+
+#### Step 2: Application Token Configuration
+
+To configure `Netzilo` application token you need to:
+
+- Click `Projects` in the top menu and select `Netzilo` project from the list
+- Select `Netzilo` application from `APPLICATIONS` section
+- Click `Token Settings` in the left menu
+- Fill in the form with the following values:
+- Auth Token Type: `JWT`
+- Check `Add user roles to the access token` checkbox
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-token-settings.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 3: Application Redirect Configuration
+
+<Note>
+    This step is intended for setup running in development mode with no SSL
+</Note>
+
+To configure `Netzilo` application redirect you need to:
+
+- Click `Projects` in the top menu and select `Netzilo` project from the list
+- Select `Netzilo` application from `APPLICATIONS` section
+- Click `Redirect Settings` in the left menu
+- Fill in the form with the following values:
+- Toggle `Development Mode`
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-redirect-settings.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 4: Create a Service User
+
+In this step we will create a `Netzilo` service user.
+
+- Click `Users` in the top menu
+- Select `Service Users` tab
+- Click `New`
+- Fill in the form with the following values:
+- User Name: `Netzilo`
+- Name: `Netzilo`
+- Description: `Netzilo Service User`
+- Access Token Type: `JWT`
+- Click `Create`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-create-user.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+In this step we will generate `ClientSecret` for the `Netzilo` service user.
+
+- Click `Actions` in the top right corner and click `Generate Client Secret`
+- Copy `ClientSecret` from the dialog will be used later to set `Netzilo_IDP_MGMT_CLIENT_ID` in the `setup.env`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-service-user-secret.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 5: Grant manage-users role to Netzilo service user
+
+In this step we will grant `Org User Manager` role to `Netzilo` service user.
+
+- Click `Organization` in the top menu
+- Click `+` in the top right corner
+- Search for `Netzilo` service user
+- Check `Org User Manager` checkbox
+- Click `Add`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/zitadel-service-account-role.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+Your authority OIDC configuration will be available under:
+
+```bash
+https://<YOUR_ZITADEL_HOST_AND_PORT>/.well-known/openid-configuration
+```
+
+:::caution
+Double-check if the endpoint returns a JSON response by calling it from your browser.
+:::
+
+- Set properties in the `setup.env` file:
+```json
+Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT="https://<YOUR_ZITADEL_HOST_AND_PORT>/.well-known/openid-configuration"
+Netzilo_USE_AUTH0=false
+Netzilo_AUTH_CLIENT_ID="<CLIENT_ID>"
+Netzilo_AUTH_SUPPORTED_SCOPES="openid profile email offline_access api"
+Netzilo_AUTH_AUDIENCE="<CLIENT_ID>"
+Netzilo_AUTH_REDIRECT_URI="/auth"
+Netzilo_AUTH_SILENT_REDIRECT_URI="/silent-auth"
+
+
+Netzilo_AUTH_DEVICE_AUTH_PROVIDER="hosted"
+Netzilo_AUTH_DEVICE_AUTH_CLIENT_ID="<CLIENT_ID>"
+Netzilo_AUTH_DEVICE_AUTH_AUDIENCE="<CLIENT_ID>"
+
+Netzilo_MGMT_IDP="zitadel"
+Netzilo_IDP_MGMT_CLIENT_ID="Netzilo"
+Netzilo_IDP_MGMT_CLIENT_SECRET="<CLIENT_SECRET>"
+Netzilo_IDP_MGMT_EXTRA_MANAGEMENT_ENDPOINT="https://<YOUR_ZITADEL_HOST_AND_PORT>/management/v1"
+
+```
+
+#### Step 6: Continue with the Netzilo Self-hosting Guide
+You've configured all required resources in Zitadel. You can now continue with the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide#step-4-disable-single-account-mode-optional).
+
+
+### Keycloak
+
+This guide is a part of the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide) and explains how to integrate
+**self-hosted** Netzilo with [Keycloak](https://www.keycloak.org/).
+
+Keycloak is an open source software product to allow single sign-on with Identity and Access Management aimed at modern applications and services.
+
+<Note>
+    If you prefer not to self-host an Identity and Access Management solution, then you could use a managed alternative like
+    [Auth0](/selfhosted/identity-providers#auth0).
+</Note>
+
+The following guide is an adapted version of the original
+[Keycloak on Docker](https://www.keycloak.org/getting-started/getting-started-docker) guide from the official website.
+
+#### Expected Result
+
+After completing this guide, you can log in to your self-hosted Netzilo Dashboard and add your machines
+to your network using the [Interactive SSO Login feature](/how-to/getting-started#running-net-bird-with-sso-login)
+over Keycloak.
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-auth-grant.gif" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 1: Check your Keycloak Instance
+
+For this guide, you need a fully configured Keycloak instance running with SSL.
+
+We assume that your Keycloak instance is available at **`https://YOUR-KEYCLOAK-HOST-AND_PORT`**.
+Feel free to change the port if you have configured Keycloak with a different one.
+
+Most of the OIDC software requires SSL for production use.
+We encourage you to comply with this requirement to make the world more secure 😊.
+
+#### Step 2: Create a realm
+
+To create a realm you need to:
+
+- Open the Keycloak Admin Console
+- Hover the mouse over the dropdown in the top-left corner where it says `Master`, then click on `Create Realm`
+- Fill in the form with the following values:
+- Realm name: `Netzilo`
+- Click `Create`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-create-realm.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+
+#### Step 3: Create a user
+
+In this step we will create a Netzilo administrator user.
+
+- Open the Keycloak Admin Console
+- Make sure, that the selected realm is `Netzilo`
+- Click `Users` (left-hand menu)
+- Click `Create new user`
+- Fill in the form with the following values:
+- Username: `Netzilo`
+- Click `Create`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-create-user.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+The user will need an initial password set to be able to log in. To do this:
+- Click `Credentials` tab
+- Click `Set password` button
+- Fill in the password form with a password
+- Set the `Temporary` field to `Off` to prevent having to update password on first login
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-set-password.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 4: Create a Netzilo client
+
+In this step we will create Netzilo application client and register with the Keycloak instance.
+
+- Open the Keycloak Admin Console
+- Make sure, that the selected realm is `Netzilo`
+- Click `Clients`
+- Click `Create client` button
+- Fill in the form with the following values and click Next:
+- Client Type: `OpenID Connect`
+- Client ID: `Netzilo-client`
+- Your newly client `Netzilo-client` will be used later to set `Netzilo_AUTH_CLIENT_ID` in the `setup.env`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-create-client.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+
+- Check the checkboxes as on the screenshot below and click Save
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-enable-auth.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 5: Adjust Netzilo client access settings
+
+In this step we will configure Netzilo application client access with the Netzilo URLs.
+
+- Open the Keycloak Admin Console
+- Make sure, that the selected realm is `Netzilo`
+- Click `Clients`
+- Choose `Netzilo-client` from the list
+- Go to `Access Settings` section
+- Fill in the fields with the following values:
+- Root URL: `https://YOUR DOMAIN/` (this is the Netzilo Dashboard root URL)
+- Valid redirect URIs: `https://YOUR DOMAIN/*` and `http://localhost:53000`
+- Valid post logout redirect URIs: `https://YOUR DOMAIN/*`
+- Web origins: `+`
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-access-settings.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 6: Create a Netzilo client scope
+
+In this step, we will create and configure the Netzilo client audience for Keycloak to add it to the generated JWT tokens.
+
+- Open the Keycloak Admin Console
+- Make sure, that the selected realm is `Netzilo`
+- Click `Client scopes` (left-hand menu)
+- Click `Create client scope` button
+- Fill in the form with the following values:
+- Name: `api`
+- Type: `Default`
+- Protocol: `OpenID Connect`
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-create-client-scope.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- While in the newly created Client Scope, switch to the `Mappers` tab
+- Click `Configure a new mapper`
+- Choose the `Audience` mapping
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-configure-audience-mapper.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Fill in the form with the following values:
+- Name: `Audience for Netzilo Management API`
+- Included Client Audience: `Netzilo-client`
+- Add to access token: `On`
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-configure-audience-mapper-2.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 7: Add client scope to Netzilo client
+
+- Open the Keycloak Admin Console
+- Make sure, that the selected realm is `Netzilo`
+- Click `Clients`
+- Choose `Netzilo-client` from the list
+- Switch to `Client scopes` tab
+- Click `Add client scope` button
+- Choose `api`
+- Click `Add` choosing `Default`
+- The value `Netzilo-client` will be used as audience
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloack-add-client-scope.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 8: Create a Netzilo-Backend client
+
+In this step we will create Netzilo backend client and register with the Keycloak instance.
+
+- Open the Keycloak Admin Console
+- Make sure, that the selected realm is `Netzilo`
+- Click `Clients`
+- Click `Create client` button
+- Fill in the form with the following values and click Next:
+- Client Type: `OpenID Connect`
+- Client ID: `Netzilo-backend`
+- Your newly client `Netzilo-backend` will be used later to set `Netzilo_IDP_MGMT_CLIENT_ID` in the `setup.env`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-create-backend-client.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Check the checkboxes as on the screenshot below and click Save
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-backend-client-auth.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+The client will need secret to authenticate. To do this:
+- Click `Credentials` tab
+- Copy `client secret` will be used later to set `Netzilo_IDP_MGMT_CLIENT_SECRET` in the `setup.env`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-backend-client-credentials.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 9: Add view-users role to Netzilo-backend
+
+- Open the Keycloak Admin Console
+- Make sure, that the selected realm is `Netzilo`
+- Click `Clients`
+- Choose `Netzilo-backend` from the list
+- Switch to `Service accounts roles` tab
+- Click `Assign roles` button
+- Select `Filter by clients` and search for `view-users`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-service-account-role.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Check the role checkbox and click assign
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/keycloak-add-role.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+<Note>
+Optional
+
+Netzilo offers the ability to automatically delete a user from the Keycloak side when the user is deleted from the associated account.
+ To enable this functionality, simply include the `--user-delete-from-idp` flag in the management startup command within your Docker Compose configuration. If you choose to enable this feature,
+ please ensure that you assign the `manage-users` role to the `Netzilo-backend` following the steps outlined above.
+</Note>
+
+Your authority OIDC configuration will be available under:
+```bash
+https://<YOUR_KEYCLOAK_HOST_AND_PORT>/realms/Netzilo/.well-known/openid-configuration
+```
+<Note>
+    Double-check if the endpoint returns a JSON response by calling it from your browser.
+</Note>
+
+- Set properties in the `setup.env` file:
+```shell
+Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT=`https://<YOUR_KEYCLOAK_HOST_AND_PORT>/realms/Netzilo/.well-known/openid-configuration`.
+Netzilo_USE_AUTH0=false
+Netzilo_AUTH_CLIENT_ID=`Netzilo-client`
+Netzilo_AUTH_SUPPORTED_SCOPES="openid profile email offline_access api"
+Netzilo_AUTH_AUDIENCE=`Netzilo-client`
+
+Netzilo_AUTH_DEVICE_AUTH_CLIENT_ID=`Netzilo-client`
+
+Netzilo_MGMT_IDP="keycloak"
+Netzilo_IDP_MGMT_CLIENT_ID="Netzilo-backend"
+Netzilo_IDP_MGMT_CLIENT_SECRET="<Netzilo_BACKEND_CLIENT_SECRET>"
+Netzilo_IDP_MGMT_EXTRA_ADMIN_ENDPOINT="https://<YOUR_KEYCLOAK_HOST_AND_PORT>/admin/realms/Netzilo"
+
+```
+<Note>
+    Make sure that your Keycloak instance use HTTPS. Otherwise, the setup won't work.
+</Note>
+
+#### Step 10: Continue with the Netzilo Self-hosting Guide
+You've configured all required resources in Keycloak. You can now continue with the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide#step-4-disable-single-account-mode-optional).
+
+### Authentik
+
+This guide is a part of the [Netzilo Self-hosting Guide](/docs/selfhosted/selfhosted-guide) and explains how to integrate
+**self-hosted** Netzilo with [Authentik](https://goauthentik.io).
+
+<Note>
+    If you prefer not to self-host an Identity and Access Management solution, then you could use a managed alternative like
+    [Auth0](/selfhosted/identity-providers#auth0).
+</Note>
+
+#### Step 1: Create OAuth2/OpenID Provider
+In this step, we will create OAuth2/OpenID Provider in Authentik.
+
+- Navigate to authentik  admin interface
+- Click `Applications` on the left menu, then click `Providers`
+- Click `Create` to create new provider
+- Fill in the form with the following values and click `Next`
+    - type: `OAuth2/OpenID Provider`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/authentik-new-provider-type.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Fill in the form with the following values and click `Finish`
+    - Name: `Netzilo`
+    - Authentication Flow: `default-authentication-flow (Welcome to authentik!)`
+    - Authorization Flow: `default-provider-authorization-explicit-consent (Authorize Application)`
+    - Protocal Settings:
+        - Client type: `Public`
+        - Redirect URIs/Origins (RegEx): `https://<domain>`, `https://<domain>.*`, `http://localhost:53000` (Each URI should be entered on a new line)
+    - Advanced protocol settings:
+        - Access code validity: `minutes=10`
+        - Subject mode: `Based on the User's ID`
+
+Take note of `Client ID`, we will use it later
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/authentik-new-provider-config.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+#### Step 2: Create external applications
+In this step, we will create external applications in Authentik.
+
+- Navigate to authentik  admin interface
+- Click `Applications` on the left menu, then click `Applications`
+- Click `Create` to create new application
+- Fill in the form with the following values and click `Create`
+    - Name: `Netzilo`
+    - Slug: `Netzilo`
+    - Provider: `Netzilo`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/authentik-new-application.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+#### Step 3: Create service account
+In this step, we will create service account.
+
+- Navigate to authentik  admin interface
+- Click `Directory` on the left menu, then click `Users`
+- Click `Create Service Account` to create service account
+- Fill in the form with the following values and click `Create`
+    - Username: `Netzilo`
+    - Create Group: `Disable`
+ 
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/authentik-new-service-account.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Take note of service account `username` and `password`, we will need it later
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/authentik-service-account-details.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+#### Step 4: Add service account to admin group
+In this step, we will add `Netzilo` service account to `authentik Admins` group.
+
+- Navigate to authentik  admin interface
+- Click `Directory` on the left menu, then click `Groups`
+- Click `authentik Admins` from list of groups and select `Users` tab at the top
+- Click `Add existing user` and click `+` button to add user
+- Select `Netzilo` and click `Add`
+- Disable `Hide service-accounts` and verify if user `Netzilo` is added to the group
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/authentik-add-user-group.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+Your authority OIDC configuration will be available under:
+
+```bash
+https://< YOUR_AUTHENTIK_HOST_AND_PORT >/application/o/Netzilo/.well-known/openid-configuration
+```
+
+<Note>
+Double-check if the endpoint returns a JSON response by calling it from your browser.
+</Note>
+
+- Set properties in the `setup.env` file:
+```shell
+Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT="https://<YOUR_AUTHENTIK_HOST_AND_PORT>/application/o/Netzilo/.well-known/openid-configuration"
+Netzilo_USE_AUTH0=false
+Netzilo_AUTH_CLIENT_ID="<PROVIDER_CLIENT_ID>"
+Netzilo_AUTH_SUPPORTED_SCOPES="openid profile email offline_access api"
+Netzilo_AUTH_AUDIENCE="<PROVIDER_CLIENT_ID>"
+Netzilo_AUTH_DEVICE_AUTH_CLIENT_ID="<PROVIDER_CLIENT_ID>"
+Netzilo_AUTH_DEVICE_AUTH_AUDIENCE="<PROVIDER_CLIENT_ID>"
+
+Netzilo_MGMT_IDP="authentik"
+Netzilo_IDP_MGMT_CLIENT_ID="<PROVIDER_CLIENT_ID>"
+Netzilo_IDP_MGMT_EXTRA_USERNAME="Netzilo"
+Netzilo_IDP_MGMT_EXTRA_PASSWORD="<SERVICE_ACCOUNT_PASSWORD>"
+
+```
+#### Step 5: Continue with the Netzilo Self-hosting Guide
+You've configured all required resources in Authentik. You can now continue with the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide#step-4-disable-single-account-mode-optional).
+
+## Managed IDPs
+
+### Azure AD
+
+This guide is a part of the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide) and explains how to integrate **self-hosted** Netzilo with [Azure AD](https://azure.microsoft.com/en-us/products/active-directory/).
+
+Azure AD is a an enterprise identity service that provides single sign-on and multifactor authentication to your applications.
+It is a 3rd party managed service and can't be self-hosted.
+
+<Note>
+    If you prefer to have full control over authentication and authorization of your Netzilo network, there are good
+    self-hosted alternatives to the managed Auth0 service like [Keycloak](/selfhosted/identity-providers#keycloak).
+</Note>
+
+Before you start creating and configuring an Azure AD application, ensure that you have the following:
+- An Azure account: To create an Azure AD application, you must have an Azure account. If you don't have one, sign up for a free account at https://azure.microsoft.com/free/.
+
+- User account with appropriate permissions: You must have an Azure AD user account with the appropriate permissions to create and manage Azure AD applications. If you don't have the required permissions, ask your Azure AD administrator to grant them to you.
+
+
+#### Step 1. Create and configure Azure AD application
+In this step, we will create and configure Netzilo application in azure AD.
+- Navigate to [Azure Active Directory](https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Overview)
+- Click `App Registrations` in the left menu then click on the `+ New registration` button to create a new application.
+- Fill in the form with the following values and click Register
+    - Name: `Netzilo`
+    - Account Types: `Accounts in this organizational directory only (Default Directory only - Single tenant)`
+    - Redirect URI: select `Single-page application (SPA)` and URI as `https://<yourNetzilodomain.com>/silent-auth`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-new-application.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 2. Platform configurations
+- Click `Authentication` on the left side menu
+- Under the `Single-page application` Section, add another URI `https://<yourNetzilodomain.com>/auth`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-spa-uri-setup.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Scroll down and setup other options as on the screenshot below and click Save
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-flows-setup.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Click `Add a Platform` and select `Mobile and desktop applications`
+- Fill in the form with the following values and click Configure
+    - Custom redirect URIs:  `http://localhost:53000`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-spa-uri-setup.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 3. Create a Netzilo application scope
+- Click `Expose an API` on the left menu
+- Under `Application ID URI` click `Set` and then `Save`
+- Click `+ Add a Scope`
+- Fill in the form with the following values and click `Add scope`
+- Scope name: `api`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-add-scope.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Under `Authorized client Applications`, click on `+ add a client application` and enter the following:
+- Fill in the form with the following values and click `Add application`
+- Client ID: same as your Application ID URI minus the `api://`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-add-application-scope.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+
+#### Step 4. Add API permissions
+- Add `Netzilo` permissions
+- Click `API permissions` on the left menu
+- Click `Add a permission`
+- Click `My APIs` tab, and select `Netzilo`. Next check `api` permission checkbox and click `Add permissions`.
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-Netzilo-api-permisssions.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Add `Delagated permissions` to Microsoft Graph
+- Click `Add a permission`
+- Click `Microsoft Graph` and then click `Application permissions` tab
+- In `Select permissions` search for `User.Read` and under the `User` section select `User.Read.All` and click  `Add permissions`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-openid-permissions.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+
+- Click `Grant admin conset for Default Directory` and click `Yes`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-grant-admin-conset.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 5. Update token version
+- Click `Manifest` on left menu
+- Search for `accessTokenAcceptedVersion` and change the value from `null` to `2`
+- Click `Save`
+
+#### Step 6. Generate client secret
+- Click `Certificates & secrets` on left menu
+- Click `New client secret`
+- Fill in the form with the following values and click `Add`
+- Description: `Netzilo`
+- Copy `Value` and save it as it can be viewed only once after creation.
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/azure-client-secret.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+Your authority OIDC configuration will be available under:
+```bash
+https://login.microsoftonline.com/<TENANT_ID>/v2.0/.well-known/openid-configuration
+```
+<Note>
+    Double-check if the endpoint returns a JSON response by calling it from your browser.
+</Note>
+
+- Set properties in the `setup.env` file:
+```shell
+Netzilo_DOMAIN="<YOUR_DOMAIN>"
+Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT="https://login.microsoftonline.com/<TENANT_ID>/v2.0/.well-known/openid-configuration"
+Netzilo_USE_AUTH0=false
+Netzilo_AUTH_CLIENT_ID="<APPLICATION_ID>"
+Netzilo_AUTH_SUPPORTED_SCOPES="openid profile email offline_access api://<APPLICATION_ID>/api"
+Netzilo_AUTH_AUDIENCE="<APPLICATION_ID>"
+Netzilo_AUTH_REDIRECT_URI="/auth"
+Netzilo_AUTH_SILENT_REDIRECT_URI="/silent-auth"
+Netzilo_AUTH_USER_ID_CLAIM="oid"
+
+Netzilo_AUTH_DEVICE_AUTH_PROVIDER="none"
+
+Netzilo_MGMT_IDP="azure"
+Netzilo_IDP_MGMT_CLIENT_ID="<APPLICATION_ID>"
+Netzilo_IDP_MGMT_CLIENT_SECRET="<CLIENT_SECRET>"
+Netzilo_IDP_MGMT_EXTRA_OBJECT_ID="<OBJECT_ID>"
+Netzilo_IDP_MGMT_EXTRA_GRAPH_API_ENDPOINT="https://graph.microsoft.com/v1.0"
+
+```
+
+#### Step 7: Continue with the Netzilo Self-hosting Guide
+You've configured all required resources in Azure AD. You can now continue with the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide#step-4-disable-single-account-mode-optional).
+
+### Okta
+
+This guide is a part of the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide) and explains how to integrate 
+**self-hosted** Netzilo with [Okta](https://www.okta.com/).
+
+<Note>
+If you prefer to have full control over authentication and authorization of your Netzilo network, there are good self-hosted alternatives to the managed Okta service like [Keycloak](/selfhosted/identity-providers#keycloak).
+</Note>
+
+Before you start creating and configuring an Okta application, ensure that you have an Okta workforce identity cloud account. If you don't have one, sign up for a free account at https://www.okta.com/free-trial/.
+
+#### Step 1. Create and configure Okta single-page application
+In this step, we will create and configure Netzilo single-page application in okta.
+- Navigate to Okta Admin Dashboard
+- Click `Applications` in the left menu and then click on `Applications`
+- Click `Create App Intergration`
+- Fill in the form with the following values and click `Next`
+  - Sign-in method: `OIDC - OpenID Connect`
+  - Application type: `Single-Page Application`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/okta-new-single-page-application.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Fill in the form with the following values and click `Save`
+    - App integration name: `Netzilo`
+    - Grant type: `Authorization Code` and `Refresh Token`
+    - Sign-in redirect URIs: `https://<yourNetzilodomain.com>/auth`, `https://<yourNetzilodomain.com>/silent-auth` and `http://localhost:53000`
+    - Sign-out redirect URIs: `https://<yourNetzilodomain.com>/`
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/okta-single-page-application.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Navigate to Okta Admin Dashboard
+- Click `Applications` in the left menu and then click on `Applications`
+- Select `Netzilo` application on the list and take a note of the `Client ID`, we will use it later
+- Click on `Sign On` tab on top menu
+- Under `OpenID Connect ID Token` section, click `Edit` and update `Issuer`  to use the `Okta URL`
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/okta-single-sign-on-configuration.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+#### Step 2. Create and configure Okta native application
+In this step, we will create and configure Netzilo native application in okta.
+- Navigate to Okta Admin Dashboard
+- Click `Applications` in the left menu and then click on `Applications`
+- Click `Create App Intergration`
+- Fill in the form with the following values and click `Next`
+  - Sign-in method: `OIDC - OpenID Connect`
+  - Application type: `Native Application`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/okta-new-native-application.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Fill in the form with the following values and click `Save`
+    - App integration name: `Netzilo Native App`
+    - Grant type: `Device Authorization`
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/okta-native-application.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Navigate to Okta Admin Dashboard
+- Click `Applications` in the left menu and then click on `Applications`
+- Select `Netzilo Native App` application on the list and take a note of the `Client ID`, we will use it later
+- Click on `Sign On` tab on top menu
+- Under `OpenID Connect ID Token` section, click `Edit` and update `Issuer`  to use the `Okta URL`
+- Click `Save`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/okta-native-sign-on-configuration.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+
+#### Step 3. Generate api token
+In this step, we will generate Netzilo api token in okta for authorizing calls to user api.
+
+- Navigate to Okta Admin Dashboard
+- Click `Security` in the left menu and then click on `API`
+- Click on `Tokens` tab on top menu
+- Click `Create token`
+- Fill in the form with the following values and click `Create token`
+    - Name: `Netzilo`
+- Take note of token value and click `OK, got it`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/okta-generate-token.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+
+Your authority OIDC configuration will be available under:
+```bash
+https://<YOUR_OKTA_ORGANIZATION_URL>/.well-known/openid-configuration
+```
+<Note>
+    Double-check if the endpoint returns a JSON response by calling it from your browser.
+</Note>
+
+- Set properties in the `setup.env` file:
+```json
+Netzilo_DOMAIN="<YOUR_DOMAIN>"
+Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT="https://<YOUR_OKTA_ORGANIZATION_URL>/.well-known/openid-configuration"
+Netzilo_USE_AUTH0=false
+Netzilo_AUTH_AUDIENCE="<<Netzilo_CLIENT_ID>>"
+Netzilo_AUTH_CLIENT_ID="<Netzilo_CLIENT_ID>"
+Netzilo_AUTH_SUPPORTED_SCOPES="openid profile email"
+Netzilo_AUTH_REDIRECT_URI="/auth"
+Netzilo_AUTH_SILENT_REDIRECT_URI="/silent-auth"
+Netzilo_TOKEN_SOURCE="idToken"
+
+Netzilo_AUTH_DEVICE_AUTH_PROVIDER="hosted"
+Netzilo_AUTH_DEVICE_AUTH_CLIENT_ID="<Netzilo_NATIVE_CLIENT_ID>>"
+Netzilo_AUTH_DEVICE_AUTH_AUDIENCE="<Netzilo_NATIVE_CLIENT_ID>"
+Netzilo_AUTH_DEVICE_AUTH_SCOPE="openid email"
+Netzilo_AUTH_DEVICE_AUTH_USE_ID_TOKEN=true
+
+Netzilo_MGMT_IDP="okta"
+Netzilo_IDP_MGMT_EXTRA_API_TOKEN="<api_token>"
+```
+#### Step 4: Continue with the Netzilo Self-hosting Guide
+You've configured all required resources in Okta. You can now continue with the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide#step-4-disable-single-account-mode-optional).
+
+### Google Workspace
+
+This guide is a part of the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide) and explains how to integrate 
+**self-hosted** Netzilo with [Google Workspace](https://workspace.google.com/).
+
+<Note>
+Beginning with Netzilo version v0.23.6 and onwards, the Google Workspace IdP manager no longer requires the creation of a custom admin role called `User and Schema Management`. 
+Instead, we are transitioning towards a more tailored role explicitly designed for managing read-only user information. 
+Consequently, you have the option to remove the previously established custom admin role and refer to the documentation to configure the admin role scope for read-only access correctly.
+</Note>
+
+Before you start creating and configuring an Google Workspace application, ensure that you have the following:
+- An Google Workspace account: To create an Google Work application, you must have an Google Workspace. If you don't have one, sign up at https://workspace.google.com/business/signup/welcome.
+- User account with admin permissions: You must have an Google Workspace user account with the admin permissions to create and manage Google Workspace applications. If you don't have the required permissions, ask your workspace administrator to grant them to you.
+- Create new `Netzilo` project in Google cloud console https://console.cloud.google.com.
+- Enable `Admin SDK API` for `Netzilo` project at https://console.cloud.google.com/apis/library/admin.googleapis.com.
+
+#### Step 1: Configure OAuth consent screen
+- Navigate to [OAuth consent](https://console.cloud.google.com/apis/credentials/consent) page
+- Select `Internal` User Type and click create
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-consent-screen-type.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Fill in the form with the following values and click `SAVE AND CONTINUE`
+    - App name: `Netzilo`
+    - User support email: `<administrator email address>`
+    - Authorized domain: `<your Netzilo domain>`
+    - Developer contact information: `<developer email address>`
+- Click `ADD OR REMOVE SCOPES`
+- Select `/auth/userinfo.email`, `/auth/userinfo.profile` and `openid` scopes and then click `UPDATE`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-consent-screen-scopes.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- Click `SAVE AND CONTINUE`
+- Verify the summary of the OAuth consent screen to ensure that everything is properly configured, and then click `BACK TO DASHBOARD`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-consent-screen-summary.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+#### Step 2: Create OAuth 2.0 credentials
+- Navigate to [API Credentials](https://console.cloud.google.com/apis/credentials) page
+- Click `CREATE CREDENTIALS` at the top and select `OAuth client ID`
+- Fill in the form with the following values and click `CREATE`
+    - Application type: `Web application`
+    - Name: `Netzilo`
+    - Authorized JavaScript origins: `https://<your Netzilo domain>` and `http://localhost`
+    - Authorized redirect URIs: `https://<your Netzilo domain>/auth`, `https://<your Netzilo domain>/silent-auth` and `http://localhost:53000`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-oauth-client.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- Take note of `Client ID` and `Client Secret` and click `OK`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-oauth-client-created.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+#### Step 3: Create service account
+- Navigate to [API Credentials](https://console.cloud.google.com/apis/credentials) page
+- Click `CREATE CREDENTIALS` at the top and select `Service account`
+- Fill in the form with the following values and click `CREATE`
+    - Service account name: `Netzilo`
+    - Service account ID: `Netzilo`
+- Take note of service account email address, we will use it later
+- Click `DONE`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-service-account-create.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+#### Step 4: Create service account keys
+- Navigate to [API Credentials](https://console.cloud.google.com/apis/credentials) page
+- Under  `Service Accounts` click the `Netzilo` to edit the service account
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-edit-service-account.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- Click the `Keys` tab
+- Click the `Add key` drop-down menu, then select `Create new key`
+- Select `JSON` as the Key type and click `Create`
+
+<Note>
+When you create a service account key by using the Google Cloud console, most browsers immediately download the new key and save it in a download folder on your computer.
+Read how to manage and secure your service keys [here](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys#temp-locations)
+</Note>
+
+- Open downloaded json file and take note of `client_id` will be used later as `Service Account Client ID`
+
+#### Step 5: Grant user management admin role to service account
+- Navigate to [Admin Console](https://admin.google.com/ac/home) page
+- Select `Account` on the left menu and then click `Admin Roles`
+- Click `Create new role`
+- Fill in the form with the following values and click `CREATE`
+    - name: `User Management ReadOnly`
+    - description: `User Management ReadOnly`
+- Click `CONTINUE`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-new-role-info.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Scroll down to `Admin API privileges` and add the following privileges
+    - Users: `Read`
+- Click `CONTINUE`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-privileges-review.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- Verify preview of assigned Admin API privileges to ensure that everything is properly configured, and then click `CREATE ROLE`
+- Click `Assign service accounts`, add service account email address and then click `ADD`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-assign-role.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- Click `ASSIGN ROLE` to assign service account to `User Management ReadOnly` role
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/google-service-account-privileges.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Navigate to [Account Settings](https://admin.google.com/ac/accountsettings/profile?hl=en_US) page and take note of `Customer ID`
+
+- Encode service account json key into base64 format
+    ```sh 
+    base64 -i <SERVICE_ACCOUNT_KEY_PATH>
+    ```
+
+- Set properties in the `setup.env` file:
+```json
+Netzilo_DOMAIN="<YOUR_DOMAIN>"
+Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT="https://accounts.google.com/.well-known/openid-configuration"
+Netzilo_USE_AUTH0=false
+Netzilo_AUTH_AUDIENCE="<OAUTH_CLIENT_ID>"
+Netzilo_AUTH_CLIENT_ID="<OAUTH_CLIENT_ID>"
+Netzilo_AUTH_CLIENT_SECRET="<OAUTH_CLIENT_SECRET>"
+Netzilo_AUTH_SUPPORTED_SCOPES="openid profile email"
+Netzilo_AUTH_REDIRECT_URI="/auth"
+Netzilo_AUTH_SILENT_REDIRECT_URI="/silent-auth"
+Netzilo_TOKEN_SOURCE="idToken"
+
+Netzilo_AUTH_DEVICE_AUTH_PROVIDER="none"
+
+Netzilo_MGMT_IDP="google"
+Netzilo_IDP_MGMT_EXTRA_SERVICE_ACCOUNT_KEY="<BASE64_SERVICE_ACCOUNT_KEY>"
+Netzilo_IDP_MGMT_EXTRA_CUSTOMER_ID="<GOOGLE_WORKSPACE_CUSTOMER_ID>"
+```
+
+#### Step 6: Continue with the Netzilo Self-hosting Guide
+You've configured all required resources in Google Workspace. You can now continue with the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide#step-4-disable-single-account-mode-optional).
+
+### Auth0
+
+This guide is a part of the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide) and explains how to integrate **self-hosted** Netzilo with [Auth0](https://auth0.com/).
+
+Auth0 is a flexible, drop-in solution to add authentication and authorization services to your applications.
+It is a 3rd party managed service and can't be self-hosted. Auth0 is the right choice if you don't want to manage an Identity Provider (IDP)
+instance on your own.
+
+<Note>
+    If you prefer to have full control over authentication and authorization of your Netzilo network, there are good
+    self-hosted alternatives to the managed Auth0 service like [Keycloak](/selfhosted/identity-providers#keycloak).
+</Note>
+
+#### Step 1: Create Auth0 account
+To create an Auth0 account, sign up at [https://auth0.com](https://auth0.com/).
+
+There are multiple properties of the **`setup.env`** file that we will configure in this guide:
+- `Netzilo_AUTH_CLIENT_ID`
+- `Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT`
+- `Netzilo_USE_AUTH0`
+- `Netzilo_AUTH_AUDIENCE`
+- `Netzilo_AUTH_DEVICE_AUTH_CLIENT_ID` (Optional)
+- `Netzilo_MGMT_IDP`
+- `Netzilo_IDP_MGMT_CLIENT_ID`
+- `Netzilo_IDP_MGMT_CLIENT_SECRET`
+- `Netzilo_IDP_MGMT_EXTRA_AUDIENCE`
+
+#### Step 2: Create and configure Auth0 application
+
+This Auth0 application will be used to authorize access to Netzilo Dashboard (Web UI).
+
+- Follow the steps in the [Auth0 React SDK Guide](https://auth0.com/docs/quickstart/spa/react/01-login#configure-auth0)
+up until "Install the Auth0 React SDK".
+- Use **`https://YOUR DOMAIN`** and **`http://localhost:53000`** as: `Allowed Callback URLs`,
+- Use **`https://YOUR DOMAIN`** and **`http://localhost`** as: `Allowed Logout URLs`, `Allowed Web Origins`, `Allowed Origins (CORS)`
+<Note>
+    Make sure that **`Token Endpoint Authentication Method`** is set to **`None`**.
+</Note>
+
+- Use **`Client ID`** to set  ```Netzilo_AUTH_CLIENT_ID``` property in the `setup.env` file.
+- Use **`Domain`** to configure   ```Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT``` property in the `setup.env` file like so:
+
+```bash
+ https://<DOMAIN>/.well-known/openid-configuration
+```
+<Note>
+    Double-check if the endpoint returns a JSON response by calling it from your browser.
+</Note>
+
+#### Step 3: Create and configure Auth0 API
+
+This Auth0 API will be used to access Netzilo Management Service API.
+
+- Follow the steps in the [Auth0 Create An API](https://auth0.com/docs/quickstart/backend/golang#create-an-api).
+- Use API **`Identifier`** to set  ```Netzilo_AUTH_AUDIENCE``` property in the `setup.env` file.
+- Set ```Netzilo_USE_AUTH0``` to `true`in the `setup.env` file.
+
+#### Step 4: Enable Interactive SSO Login (Optional)
+
+The [Interactive SSO Login feature](/how-to/installation#running-net-bird-with-sso-login) allows for machine
+authorization with your Identity Provider. This feature can be used as an alternative to [setup keys](/how-to/register-machines-using-setup-keys)
+and is optional.
+
+You can enable it by following these steps:
+- Log in to your Auth0 account https://manage.auth0.com/
+- Go to `Applications` (left-hand menu)
+- Click `Create Application` button (top right)
+- Fill in the form with the following values:
+  - Name: `Interactive Login`
+  - Application type: `Native`
+- Click `Create`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/auth0-create-interactive-login-app.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Click `Settings` tab
+- Copy **`Client ID`** to `Netzilo_AUTH_DEVICE_AUTH_CLIENT_ID` in the `setup.env` file
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/auth0-interactive-login-settings.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Scroll down to the `Advanced Settings` section
+- Enable **`Device Code`**
+- Click `Save Changes`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/auth0-grant-types.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+#### Step 5: Create and configuire Machine to Machine application.
+This application will be used to authorize access to Auth0 Management API.
+
+- Log in to your Auth0 account https://manage.auth0.com/
+- Go to `Applications` (left-hand menu)
+- Click `Create Application` button (top right)
+- Fill in the form with the following values:
+  - Name: `Netzilo API`
+  - Application type: `Machine to Machine Applications`
+- Click `Create`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/auth0-create-machine-app.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Fill the form with the following values:
+  - API: `Auth0 Management API`
+  - Permissions: `read:users`, `update:users`, `create:users`, `read:users_app_metadata`, `update:users_app_metadata`, `create:users_app_metadata`
+  - Click `Authorize`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/auth0-machine-authorization.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+<Note>
+Optional
+
+Netzilo offers the ability to automatically delete a user from the Auth0 side when the user is deleted from the associated account.
+To enable this functionality, include the `--user-delete-from-idp` flag in the management startup command within your Docker Compose configuration. If you choose to enable this feature, please ensure that you assign the `delete:users` permission following the steps outlined above.
+</Note>
+
+- Click `Settings` tab
+- Copy **`Client ID`** to `Netzilo_IDP_MGMT_CLIENT_ID` in the `setup.env` file
+- Copy **`Client SECRET`** to `Netzilo_IDP_MGMT_CLIENT_SECRET` in the `setup.env` file
+- Copy **`DOMAIN`** to `Netzilo_IDP_MGMT_EXTRA_AUDIENCE` in the `setup.env` file
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/auth0-machine-settings.png" alt="high-level-dia" className="imagewrapper"/>
+</p>
+
+- Set properties in the `setup.env` file:
+```shell
+Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT="https://<DOMAIN>/.well-known/openid-configuration"
+Netzilo_USE_AUTH0=true
+Netzilo_AUTH_CLIENT_ID="<Client_ID>"
+Netzilo_AUTH_SUPPORTED_SCOPES="openid profile email offline_access api email_verified"
+Netzilo_AUTH_AUDIENCE="<IDENTIFIER>"
+Netzilo_AUTH_DEVICE_AUTH_CLIENT_ID="<INTERACTIVE_CLIENT_ID>"
+
+Netzilo_MGMT_IDP="auth0"
+Netzilo_IDP_MGMT_CLIENT_ID="<Netzilo_API_CLIENT_ID>"
+Netzilo_IDP_MGMT_CLIENT_SECRET="<Netzilo_API_CLIENT_SECRET>"
+Netzilo_IDP_MGMT_EXTRA_AUDIENCE="https://<DOMAIN>/api/v2/"
+```
+
+
+#### Step 6: Continue with the Netzilo Self-hosting Guide
+You've configured all required resources in Auth0. You can now continue with the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide#step-4-disable-single-account-mode-optional).
+
+### JumpCloud
+
+This guide is a part of the [Netzilo Self-hosting Guide](/getting-started/self-hosting) and explains how to integrate 
+**self-hosted** Netzilo with [JumpCloud](https://jumpcloud.com/).
+
+Before you start creating and configuring an JumpCloud application, ensure that you have the following:
+- An JumpCloud account: To create application, you must have an JumpCloud account. If you don't have one, sign up at https://jumpcloud.com/.
+- User account with admin permissions: You must have an JumpCloud account with the admin permissions. If you don't have the required permissions, ask your administrator to grant them to you.
+
+
+#### Step 1: Create and configure SSO application
+
+- Navigate to to [Admin Portal](https://console.jumpcloud.com/) page
+- Click `SSO Applications` on the left menu under `USER AUTHENTICATION` section
+- Click `Add New Application` and select `Custom Application`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-new-sso-app.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- On the `Which application would you like to integrate` screen, confirm that you've selected `Custom application` and click `Next`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-new-sso-app-confirm-selection.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- On the `Select the features you would like to enable` screen, select `Manage Single Sign-On (SSO)` and check `Configure SSO with OIDC` and click `Next`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-new-sso-app-features.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- On the `Enter General info` screen, add `Netzilo` as `Display Label` and click `Next`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-new-sso-app-general-info.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- On the confirmation screen, review the information and click on `Configure Application` to proceed
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-new-sso-app-confirmation.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- On the `New Application` screen, click on the SSO tab and enter the following values:
+    - Under `Endpoint Configuration` section:
+      - Redirect URIs: `https://<domain>/silent-auth`, `https://<domain>/auth` and `http://localhost:53000`
+      - Client Authentication Type: `Public (None PKCE)`
+      - Login URL: `https://<domain>`
+
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-sso-configuration.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+    - Under `Attribute Mapping (optional)` section:
+        - Standard Scopes: `Email`, `Profile`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-sso-atributes-configuration.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- Click on the `User Groups` tab and select the user groups that can access this application
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-user-groups.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- Click `Activate`
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-oidc-app.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- Take note of `Client ID`, will be used later
+
+#### Step 2: Create an account administrator for integration
+The Netzilo management system requires an API token to get user information from JumpCloud. This API is bound to an administrator user configured in JumpCloud's admin portal.
+
+The following steps will assume that you are creating a new account. If you already have a user for this purpose, confirm it has the required role described below and skip to Step 3 in this guide.
+- Navigate to to [Admin Portal](https://console.jumpcloud.com/) page
+- Go to account `Settings` and click on the add button (+)
+- On the `Create New Administrator` window, enter the following values:
+    - First Name: `Netzilo`
+    - Last Name: `Integration`
+    - Administrator Email: `Netzilo-user@<yourdomain>` # this email will be used to receive the login instructions
+    - Role: `Read Only`
+    - Click `Save`
+<Note>
+    Optional
+
+    Netzilo offers the ability to automatically delete a user from the JumpCloud side when the user is deleted from the associated account.
+    To enable this functionality, simply include the `--user-delete-from-idp` flag in the management startup command within your Docker Compose configuration. If you choose to enable this feature,
+    please ensure that you assign the `Help Desk` role to the `Netzilo Integration` user following the steps outlined above.
+</Note>
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-add-admin-user.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+After following the steps above, you will receive the login instructions for the newly created user in the email configured. Please follow the instructions to set a password for the user.
+
+#### Step 3: Generate api token
+In this step, we will generate Netzilo api token in jumpcloud for authorizing calls to user api.
+
+- Navigate to to [Admin Portal](https://console.jumpcloud.com/) page
+- Login with the user created in the previous step or with an existing user
+- Click on the account initials displayed at the top-right and select `My API Key` from the drop-down
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-profile.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+- If there is no API key generated, click on `Generate New API Key` button
+- Take note of your api token displayed 
+<p>
+    <img src="/docs-static/img/integrations/identity-providers/self-hosted/jumpcloud-api-key-generation.png" alt="high-level-dia" class="imagewrapper"/>
+</p>
+
+- Set properties in the `setup.env` file:
+```json
+Netzilo_DOMAIN="<YOUR_DOMAIN>"
+Netzilo_AUTH_OIDC_CONFIGURATION_ENDPOINT="https://oauth.id.jumpcloud.com/.well-known/openid-configuration"
+Netzilo_USE_AUTH0=false
+Netzilo_DASH_AUTH_USE_AUDIENCE=false
+Netzilo_AUTH_AUDIENCE="<CLIENT_ID>"
+Netzilo_AUTH_SUPPORTED_SCOPES="openid profile email offline_access"
+Netzilo_AUTH_CLIENT_ID="<CLIENT_ID>"
+Netzilo_AUTH_REDIRECT_URI="/auth"
+Netzilo_AUTH_SILENT_REDIRECT_URI="/silent-auth"
+Netzilo_TOKEN_SOURCE="idToken"
+
+Netzilo_AUTH_DEVICE_AUTH_PROVIDER="none"
+
+Netzilo_MGMT_IDP="jumpcloud"
+Netzilo_IDP_MGMT_EXTRA_API_TOKEN="<API_TOKEN>"
+```
+
+#### Step 4: Continue with the Netzilo Self-hosting Guide
+You've configured all required resources in JumpCloud. You can now continue with the [Netzilo Self-hosting Guide](/selfhosted/selfhosted-guide#step-5-run-configuration-script).

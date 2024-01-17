@@ -7,15 +7,15 @@ Welcome to our comprehensive guide on configuring Identity Provider (IdP) for us
 
 Before you start creating and configuring an Google Workspace application, ensure that you have the following:
 - User account with admin permissions: You must have an Google Workspace user account with the admin permissions to create and manage Google Workspace applications. If you don't have the required permissions, ask your workspace administrator to grant them to you.
-- Create new `NetBird` project in Google cloud console https://console.cloud.google.com.
-- Enable `Admin SDK API` for `Netbird` project at https://console.cloud.google.com/apis/library/admin.googleapis.com.
+- Create new `Netzilo` project in Google cloud console https://console.cloud.google.com.
+- Enable `Admin SDK API` for `Netzilo` project at https://console.cloud.google.com/apis/library/admin.googleapis.com.
 
 #### Step 1: Create a service account
 - Navigate to [API Credentials](https://console.cloud.google.com/apis/credentials) page
 - Click `CREATE CREDENTIALS` at the top and select `Service account`
 - Fill in the form with the following values and click `CREATE`
-  - Service account name: `NetBird`
-  - Service account ID: `netbird`
+  - Service account name: `Netzilo`
+  - Service account ID: `Netzilo`
 - Click `DONE`
 <p>
     <img src="/docs-static/img/how-to-guides/google-service-account-create.png" alt="service-account-create"/>
@@ -23,7 +23,7 @@ Before you start creating and configuring an Google Workspace application, ensur
 
 #### Step 2: Create service account keys
 - Navigate to [API Credentials](https://console.cloud.google.com/apis/credentials) page
-- Under  `Service Accounts` click the `NetBird` to edit the service account
+- Under  `Service Accounts` click the `Netzilo` to edit the service account
 <p>
     <img src="/docs-static/img/how-to-guides/google-edit-service-account.png" alt="edit-service-account"/>
 </p>
@@ -80,9 +80,9 @@ Before you start creating and configuring an Azure AD application, ensure that y
 - Navigate to [Azure Active Directory](https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Overview)
 - Click `App Registrations` in the left menu then click on the `+ New registration` button to create a new application.
 - Fill in the form with the following values and click `Register`
-  - Name: `NetBird`
+  - Name: `Netzilo`
   - Account Types: `Accounts in this organizational directory only (Default Directory only - Single tenant)`
-  - Redirect URI: select `Single-page application (SPA)` and URI as `https://app.netbird.io/silent-auth`
+  - Redirect URI: select `Single-page application (SPA)` and URI as `https://app.Netzilo.io/silent-auth`
 
 <p>
     <img src="/docs-static/img/how-to-guides/azure-new-application.png" alt="azure-new-application"/>
@@ -91,14 +91,14 @@ Before you start creating and configuring an Azure AD application, ensure that y
 
 #### Step 2. Platform configurations
 - Click `Authentication` on the left side menu
-- Under the `Single-page application` Section, add another URI `https://app.netbird.io/auth` and click `Save`
+- Under the `Single-page application` Section, add another URI `https://app.Netzilo.io/auth` and click `Save`
 
 <p>
     <img src="/docs-static/img/how-to-guides/azure-spa-uri-setup.png" alt="azure-spa-uri-setup" />
 </p>
 
 
-#### Step 3. Create a NetBird application scope
+#### Step 3. Create a Netzilo application scope
 - Click `Expose an API` on the left menu
 - In `Application ID URI` click `Add` and then `Save`
 <p>
@@ -148,7 +148,7 @@ Before you start creating and configuring an Azure AD application, ensure that y
 - Click `Certificates & secrets` on left menu
 - Click `New client secret`
 - Fill in the form with the following values and click `Add`
-- Description: `NetBird`
+- Description: `Netzilo`
 - Copy `Value` and save it as it can be viewed only once after creation.
 
 <p>
@@ -156,4 +156,4 @@ Before you start creating and configuring an Azure AD application, ensure that y
 </p>
 
 - Navigate to [Owner applications](https://portal.azure.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/RegisteredApps).
-- Select `NetBird` application in overview page, take note of `Application (client) ID` and `Directory (tenant) ID`.
+- Select `Netzilo` application in overview page, take note of `Application (client) ID` and `Directory (tenant) ID`.

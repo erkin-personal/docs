@@ -1,6 +1,6 @@
 # Introduction
 
-This document provides step-by-step instructions and best practices for setting up NetBird activity event streaming integrations to different third-party services.
+This document provides step-by-step instructions and best practices for setting up Netzilo activity event streaming integrations to different third-party services.
 
 ## Datadog
 
@@ -10,11 +10,11 @@ Before you start creating and configuring a Datadog event-streaming integration,
 #### Step 1: Create a Datdog API key
 - Navigate to the [API Keys](https://app.datadoghq.eu/organization-settings/api-keys) page
 - Click `+ New Key` at the top
-- Give it a descriptive name like `NetBird Event Streaming`
+- Give it a descriptive name like `Netzilo Event Streaming`
 - Click `Create Key`
-- Copy the key. You will need this key when configuring an integration in NetBird.
-#### Step 2: Create an event-streaming integration in NetBird
-Use the NetBird API to create the integration. For this you can use the following cURL command with updated parameters:
+- Copy the key. You will need this key when configuring an integration in Netzilo.
+#### Step 2: Create an event-streaming integration in Netzilo
+Use the Netzilo API to create the integration. For this you can use the following cURL command with updated parameters:
 - `platform`: A string representing the platform name. For Datadog use `datadog`.
 - `config.api_url`: The URL of the Datadog HTTP API endpoint. This URL differs based on the region. To find the correct URL, refer to the [Datadog documentation](https://docs.datadoghq.com/api/latest/logs/#send-logs).
 - `config.api_key`: The API key for the Datadog HTTP API endpoint. This key can be created in the [Datadog Console](https://app.datadoghq.com/organization-settings/api-keys).
@@ -22,7 +22,7 @@ Use the NetBird API to create the integration. For this you can use the followin
 
 ```shell
 curl --request POST \
-  --url https://api.netbird.io/api/integrations/event-streaming \
+  --url https://api.Netzilo.io/api/integrations/event-streaming \
   --header 'Accept: application/json' \
   --header 'Authorization: Token <PAT>' \
   --header 'Content-Type: application/json' \

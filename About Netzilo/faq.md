@@ -1,0 +1,65 @@
+## What firewall ports should I open to use Netzilo?
+
+### Incoming ports
+Netzilo's agent doesn't require any incoming port to be open; It negotiates the connection with the support of the signal and relay services.
+### Outgoing ports
+Netzilo usually won't need open ports, but sometimes you or your IT team needs to secure and verify
+all outgoing traffic, and that may affect how Netzilo clients connect to the [control layer](/about-Netzilo/how-Netzilo-works)
+and negotiate the peer-to-peer connections.
+
+Below is the list of Netzilo hosted endpoints and ports they listen to:
+* Management service:
+  * **Endpoint**: api.wiretrustee.com
+    * **Port**: TCP/443
+    * **IPv4**: 34.240.163.65
+  * **Endpoint**: api.Netzilo.io `new`
+    * **Port**: TCP/443
+    * **IPv4**: 35.186.199.111
+* Signal service:
+  * **Endpoint**: signal2.wiretrustee.com
+    * **Port**: TCP/443
+    * **IPv4**: 35.186.199.111
+  * **Endpoint**: signal.Netzilo.io `new`
+    * **Port**: TCP/443
+    * **IPv4**: 35.186.199.111
+    * **IPv6**: 2600:1901:0:adb3::
+* Relay (TURN) service:
+  * **Endpoint**: turn.Netzilo.io
+    * **Port range**: UDP/80,443 and TCP/443-65535
+    * **IPv4**: The list is dynamic and geo-distributed; we advise you to check the nearest cluster with the following command:
+        * `nslookup turn.Netzilo.io`
+
+## Why and what are the anonymous usage metrics?
+
+### Why we added metrics collection?
+As an open-source project and business, making decisions based on data is essential. We will know our adoption rate, feature usage, and client type with anonymous metrics.
+
+<Note>
+The collection is strict to our management system.
+</Note>
+
+If the metric collection infringes any internal regulation or policy, it can be disabled by setting the flag `--disable-anonymous-metrics=true` to the management service startup command.
+
+### What are the metrics being collected?
+We are collecting the following metrics:
+* Number of accounts
+* Number of users
+* Number of peers
+* Number of active peers in the last 24 hours
+* Number of peers per operating system
+* Number of setup keys usage
+* Number of peers activated by users
+* Number of rules
+* Number of groups
+* Number of routes
+* Number of nameservers
+* Service uptime
+* Service version
+* Metrics generation time
+
+
+### Metrics UUID
+We are using an installation ID for each management service which is generated once and stored in your management store database. It doesn't have any trace of any other private information, and it helps distinguish each deployment.
+
+### Metrics pusher IP
+We are not storing the pusher IP address; it gets discarded once the request is complete.

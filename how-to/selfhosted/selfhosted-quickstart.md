@@ -1,0 +1,112 @@
+# Self-hosting quickstart guide (5 min)
+
+Netzilo is open-source and can be self-hosted on your servers.
+
+It relies on components developed by Netzilo Authors [Management Service](https://github.com/Netziloio/Netzilo/tree/main/management), [Management UI Dashboard](https://github.com/Netziloio/dashboard), [Signal Service](https://github.com/Netziloio/Netzilo/tree/main/signal),
+a 3rd party open-source STUN/TURN service [Coturn](https://github.com/coturn/coturn), and an identity provider (available options will be listed later in this guide).
+
+If you would like to learn more about the architecture please refer to the [Architecture section](/about-Netzilo/how-Netzilo-works).
+
+<Note>
+    It might be a good idea to try Netzilo before self-hosting on your servers.
+    We run Netzilo in the cloud, and it will take a few clicks to get started with our managed version. [Check it out!](https://Netzilo.io/pricing)
+</Note>
+
+## Quick self-hosting with Zitadel IdP
+In this guide, we will guide you through deploying Netzilo with [Zitadel](https://zitadel.com/)
+as the identity provider for user management using a single-line setup script and docker containers.
+
+<Note>
+    This is the quickest way to try self-hosted Netzilo. It should take around 5 minutes to get started if you already have a public domain and a VM.
+    Follow the [Advanced guide with a custom identity provider](/selfhosted/selfhosted-guide#advanced-self-hosting-guide-with-a-custom-identity-provider) for installations with different IDPs.
+</Note>
+
+### Requirements
+
+**Infrastructure requirements:**
+- A Linux VM with at least **1CPU** and **2GB** of memory.
+- The VM should be publicly accessible on TCP ports **80** and **443** and UDP ports: **3478**, **49152-65535**.
+- **Public domain** name pointing to the VM.
+
+**Software requirements:**
+- Docker installed on the VM with the docker compose plugin ([Docker installation guide](https://docs.docker.com/engine/install/)) or docker with docker-compose in version 2 or higher.
+- [jq](https://jqlang.github.io/jq/) installed. In most distributions
+Usually available in the official repositories and can be installed with `sudo apt install jq` or `sudo yum install jq`
+- [curl](https://curl.se/) installed.
+Usually available in the official repositories and can be installed with `sudo apt install curl` or `sudo yum install curl`
+
+### Download and run the script
+
+Download and run the installation script in a single line:
+```bash
+export Netzilo_DOMAIN=Netzilo.example.com; curl -fsSL https://github.com/Netziloio/Netzilo/releases/latest/download/getting-started-with-zitadel.sh | bash
+```
+If you want to check the script before running it, you can download it and run it locally:
+```bash
+curl -sSLO https://github.com/Netziloio/Netzilo/releases/latest/download/getting-started-with-zitadel.sh
+# check the script
+cat getting-started-with-zitadel.sh
+# run the script
+export Netzilo_DOMAIN=Netzilo.example.com
+bash getting-started-with-zitadel.sh
+```
+<Note>
+    Replace `Netzilo.example.com` with your domain name.
+</Note>
+Once the script execution is complete, you can access your Netzilo instance via the URL `https://Netzilo.example.com` using the credentials displayed in your terminal.
+
+### Add users
+If you want to add additional users, you can access Zitadel's management console via the URL `https://Netzilo.example.com/ui/console` with the same credentials. Follow the [Users guide](https://zitadel.com/docs/guides/manage/console/users)
+from Zitadel to add additional local users or integrate Zitadel with your existing identity provider by following the guide [Configure identity providers](https://zitadel.com/docs/guides/integrate/identity-providers).
+
+### Backup
+To backup your Netzilo installation, you need to copy the configuration files, the Management service databases, and Zitadel's database.
+
+The configuration files are located in the folder where you ran the installation script. To backup, copy the files to a backup location:
+```bash
+mkdir backup
+cp docker-compose.yml Caddyfile zitadel.env dashboard.env turnserver.conf management.json backup/
+```
+To save the Management service databases, you need to stop the Management service and copy the files from the store directory using a docker compose command as follows:
+```bash
+docker compose stop management
+docker compose cp -a management:/var/lib/Netzilo/ backup/
+docker compose start management
+```
+You can follow the [Cockroach backup guide](https://www.cockroachlabs.com/docs/stable/backup) to backup Zitadel's database, which holds user information.
+
+### Upgrade
+To upgrade Netzilo to the latest version, you need to review the [release notes](https://github.com/Netziloio/Netzilo/releases) for any breaking changes and follow the upgrade steps below:
+1. Run the backup steps described in the [backup](#backup) section.
+2. Pull the latest Netzilo docker images:
+    ```bash
+    docker compose pull management dashboard signal
+    ```
+3. Restart the Netzilo containers with the new images:
+    ```bash
+    docker compose up -d --force-recreate management dashboard signal
+    ```
+
+### Remove
+To remove the Netzilo installation and all related data from your server, run these commands from the folder where you installed Netzilo:
+```bash
+# remove all Netzilo-related containers and volumes (data)
+docker compose down --volumes
+# remove downloaded and generated config files
+rm -f docker-compose.yml Caddyfile zitadel.env dashboard.env machinekey/zitadel-admin-sa.token turnserver.conf management.json
+```
+
+### Troubleshoot
+
+- I'm trying to register a user but I didn't receive a verification code. Whats is the problem?
+
+    The Netzilo quickstart script generates a user name and a password for the administrator. This should be enough to login and manage your network.
+    If you want to register a new user and invite them via email, you need to configure a SMTP server in Zitadel. See [this guide](https://zitadel.com/docs/guides/manage/console/instance-settings#smtp) or details.
+
+## Get in touch
+
+Feel free to ping us on [Slack](https://join.slack.com/t/Netziloio/shared_invite/zt-vrahf41g-ik1v7fV8du6t0RwxSrJ96A) if you have any questions
+
+- Netzilo managed version: [https://app.Netzilo.io](https://app.Netzilo.io)
+- Make sure to [star us on GitHub](https://github.com/Netziloio/Netzilo)
+- Follow us [on Twitter](https://twitter.com/Netzilo)
